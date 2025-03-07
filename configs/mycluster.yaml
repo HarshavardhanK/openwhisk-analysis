@@ -1,0 +1,38 @@
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: 192.168.49.2
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+
+k8s:
+  domain: cluster.local
+
+# Disable affinity for development setups
+affinity:
+  enabled: false
+
+toleration:
+  enabled: false
+
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+  containerFactory:
+    impl: "kubernetes"
+
+# Resource limits suitable for development
+limits:
+  actionsInvokesPerminute: 60
+  actionsInvokesConcurrent: 30
+  triggersFiresPerminute: 60
+
+db:
+  persistence:
+    size: 2Gi
+# Dynamic architecture configuration
+zookeeper:
+  imageName: "zookeeper"
+  imageTag: "3.8-debian-11-r11"
+  imagePullPolicy: IfNotPresent

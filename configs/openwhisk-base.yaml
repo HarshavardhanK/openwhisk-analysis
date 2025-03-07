@@ -1,0 +1,39 @@
+# Basic OpenWhisk deployment configuration
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: 192.168.49.2
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+
+k8s:
+  domain: cluster.local
+
+# Disable affinity for single-node deployment
+affinity:
+  enabled: false
+
+toleration:
+  enabled: false
+
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+
+# Smaller resource allocations for development
+limits:
+  actionsInvokesPerminute: 60
+  actionsInvokesConcurrent: 30
+  triggersFiresPerminute: 60
+
+db:
+  persistence:
+    size: 1Gi
+# ARM64-specific configurations
+zookeeper:
+  imageName: "zookeeper"
+  imageTag: "3.8-debian-11-r11"
+  imagePullPolicy: IfNotPresent
+  persistence:
+    size: 1Gi

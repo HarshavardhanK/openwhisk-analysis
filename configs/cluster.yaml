@@ -1,0 +1,20 @@
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: $(minikube ip)
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+
+k8s:
+  domain: cluster.local
+
+affinity:
+  enabled: false
+
+toleration:
+  enabled: false
+
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
