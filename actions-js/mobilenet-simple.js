@@ -106,6 +106,7 @@ async function classifyImage(model, tensor) {
     trackMemory('afterClassify');
     
     return predictions;
+    
   } catch (error) {
     throw new Error(`Error classifying image: ${error.message}`);
   }
@@ -113,7 +114,9 @@ async function classifyImage(model, tensor) {
 
 //response object
 function createResponse(predictions) {
+
   return {
+
     predictions,
     performance: {
       timings: metrics.stages,
@@ -121,6 +124,7 @@ function createResponse(predictions) {
     },
     message: "Classification complete"
   };
+
 }
 
 //Fetch and process image from URL
@@ -128,12 +132,14 @@ async function fetchAndProcessImage(imageUrl, targetSize = 224) {
   startTimer('imageProcessing');
   
   try {
+
     console.log(`Fetching image from: ${imageUrl}`);
     
     const response = await axios({
       method: 'get',
       url: imageUrl,
       responseType: 'arraybuffer'
+
     });
     
     if (response.status !== 200) {
@@ -162,6 +168,7 @@ async function fetchAndProcessImage(imageUrl, targetSize = 224) {
 
 //OpenWhisk action entry point
 async function main(params) {
+
   startTimer('total');
   trackMemory('start');
   

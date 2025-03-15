@@ -3,7 +3,7 @@
  * Simple implementation without TensorFlow for debugging
  */
 
-// Simple version without TensorFlow for debugging
+//Simple version without TensorFlow for debugging
 function main(params) {
   try {
     // Validate input parameters
@@ -15,8 +15,8 @@ function main(params) {
       return { error: "Missing required parameter 'passage'" };
     }
     
-    // For testing purposes, return a mock response
-    // This avoids TensorFlow loading issues in the container
+    //For testing purposes, return a mock response
+
     const mockText = "Sundar Pichai";
     const startIndex = params.passage.indexOf(mockText);
     
@@ -39,8 +39,8 @@ function main(params) {
       error: `Error processing request: ${error.message}`,
       stack: error.stack
     };
-  }
+  };
 }
 
-// Export the main function for OpenWhisk
+//Export the main function for OpenWhisk
 module.exports.main = main;
