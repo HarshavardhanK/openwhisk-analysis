@@ -21,7 +21,43 @@ whisk:
     apiHostName: localhost
     apiHostPort: 31001
     useInternally: false
-
+  
+  controller:
+    lean: false
+    extraEnvVars:
+      - name: CONFIG_whisk_metrics_kamon
+        value: "true"
+      - name: CONFIG_whisk_metrics_kamon_tags_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_port
+        value: "9095"
+      - name: CONFIG_whisk_metrics_prometheus_enabled 
+        value: "true"
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9095"
+    # Removed extraPorts to rely on the dedicated metrics configuration below
+  
+  invoker:
+    extraEnvVars:
+      - name: CONFIG_whisk_metrics_kamon
+        value: "true"
+      - name: CONFIG_whisk_metrics_kamon_tags_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_port
+        value: "9095"
+      - name: CONFIG_whisk_metrics_prometheus_enabled 
+        value: "true"
+    options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9095"
+    # Removed extraPorts here as well
+  
 nginx:
   httpsNodePort: 31001
 
@@ -30,5 +66,8 @@ affinity:
   enabled: false
 toleration:
   enabled: false
-invoker:
-  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+
+# Enable user metrics for action-specific metrics and system metrics
+metrics:
+  prometheusEnabled: true        # enable scraping of system metrics (controller/invoker)
+  userMetricsEnabled: true       # enable user action performance metrics pipeline

@@ -1,0 +1,42 @@
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: "130.127.133.179"
+    apiHostPort: 31001
+  configuration:
+    whisk:
+      sslCert: ""
+      sslKey: ""
+    runtimes: |
+      {
+        "runtimes": {
+          "python": [
+            {
+              "kind": "python:3.8",
+              "default": true,
+              "image": {
+                "name": "openwhisk/python3action",
+                "tag": "3.8"
+              }
+            }
+          ],
+          "nodejs": [
+            {
+              "kind": "nodejs:14",
+              "default": true,
+              "image": {
+                "name": "openwhisk/nodejs14action",
+                "tag": "latest"
+              }
+            }
+          ]
+        }
+      }
+
+invoker:
+  containerFactory:
+    impl: "kubernetes"
+
+metrics:
+  prometheusEnabled: true
+  userMetricsEnabled: true
