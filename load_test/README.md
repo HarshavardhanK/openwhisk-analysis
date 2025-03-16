@@ -85,6 +85,27 @@ After implementing our configuration changes, we ran the same load tests again. 
 
 These metrics suggest that while our configuration improvements have increased capacity, the system is still struggling with high-volume workloads, particularly for the more complex MongoDB-backed MobileNet action.
 
+### Advanced Scaling Configuration
+
+To further improve performance, we implemented a second round of more aggressive configuration changes:
+
+1. **Enhanced System Limits** in `mycluster.yaml`:
+   - Increased `concurrentInvocations` from 100 to 200
+   - Increased `throughput` from 100 to 200
+   - Increased `actionsInvokesPerminute` from 600 to 1200
+   - Increased `actionsInvokesConcurrent` from 100 to 200
+   - Increased `triggersFiresPerminute` from 600 to 1200
+   - Doubled container pool memory (`userMemory`) from 16GB to 32GB
+
+2. **Additional Horizontal Scaling**:
+   - Increased controller replicas from 2 to 3
+   - Increased invoker replicas from 2 to 3
+
+3. **Enhanced Invoker Resources**:
+   - Doubled JVM heap memory from 2048MB to 4096MB
+
+These enhancements represent a significant increase in system capacity, doubling most of the key limits and adding 50% more processing capacity through additional controller and invoker instances.
+
 ## Running Tests
 
 1. Ensure your OpenWhisk deployment has been configured with the enhanced scaling settings
