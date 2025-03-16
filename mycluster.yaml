@@ -22,8 +22,22 @@ whisk:
     apiHostPort: 31001
     useInternally: false
   
+  limits:
+    concurrentInvocations: 200
+    throughput: 200
+    actionsInvokesPerminute: 1200
+    actionsInvokesConcurrent: 200
+    triggersFiresPerminute: 1200
+  
+  loadbalancer:
+    blackbox-fraction: 0.8
+    
+  containerPool:
+    userMemory: "32G"
+    
   controller:
     lean: false
+    replicaCount: 3
     extraEnvVars:
       - name: CONFIG_whisk_metrics_kamon
         value: "true"
@@ -41,6 +55,8 @@ whisk:
     # Removed extraPorts to rely on the dedicated metrics configuration below
   
   invoker:
+    replicaCount: 3
+    jvmHeapMB: 4096
     extraEnvVars:
       - name: CONFIG_whisk_metrics_kamon
         value: "true"
@@ -52,7 +68,7 @@ whisk:
         value: "9095"
       - name: CONFIG_whisk_metrics_prometheus_enabled 
         value: "true"
-    options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+    options: "-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider -Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
     annotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9095"
@@ -69,5 +85,5 @@ toleration:
 
 # Enable user metrics for action-specific metrics and system metrics
 metrics:
-  prometheusEnabled: true        # enable scraping of system metrics (controller/invoker)
-  userMetricsEnabled: true       # enable user action performance metrics pipeline
+  prometheusEnabled: true        
+  userMetricsEnabled: true       

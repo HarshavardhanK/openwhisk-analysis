@@ -1,0 +1,31 @@
+config:
+  target: "https://localhost:31001"
+  http:
+    timeout: 30
+    rejectUnauthorized: false  #Ignore SSL cert issues
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up phase"
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 20
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+
+scenarios:
+  - name: "Test mobilenet-mongo action"
+    flow:
+      - post:
+          url: "/api/v1/namespaces/_/actions/mobilenet-mongo?blocking=true"
+          headers:
+            #Hard-coded auth (fixed base64 encoding - without newlines)
+            Authorization: "Basic Nzg5YzQ2YjEtNzFmNi00ZWQ1LThjNTQtODE2YWE0ZjhjNTAyOmFiY3pPM3haQ0xyTU42djJCS0sxZFhZRnBYbFBrY2NPRnFtMTJDZEFzTWdSVTRWck5aOWx5R1ZDR3VNREdJd1A="
+            Content-Type: "application/json"
+          json: {}
+          capture:
+            - json: "$.response.result"
+              as: "result"
+      - log: "Response time: {{ responseTime }}ms, Top class: {{ result.predictions[0].className }}"
