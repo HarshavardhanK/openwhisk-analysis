@@ -44,6 +44,22 @@ The default OpenWhisk configuration includes the following limits:
 3. **Action Settings**:
    - Default action timeout: 60s (60000ms)
 
+### Baseline (Default) Configuration Results
+
+With the default configuration, our load tests showed extremely poor performance:
+
+- **mobilenet-mongo**: Out of 8,100 concurrent users:
+  - 298 requests completed successfully
+  - 7,802 requests failed
+  - 3.68% success rate
+
+- **linear regression**: Out of 8,100 concurrent users:
+  - 286 requests completed successfully
+  - 7,814 requests failed
+  - 3.53% success rate
+
+These results clearly demonstrate that the default OpenWhisk configuration is inadequate for production workloads, especially for machine learning applications with high computational requirements.
+
 ### Applied Configuration Changes
 
 We made the following changes to address these issues:
@@ -121,4 +137,22 @@ After implementing the advanced scaling configuration:
   - 99.3% success rate
 
 This represents a significant improvement over the previous configuration, with the success rate more than doubling from 37.9% to 79.19% for the complex mobilenet-mongo action and increasing from 57.35% to 99.3% for the linear regression action.
+
+## Summary of Performance Improvements
+
+Our load testing and configuration optimization journey shows dramatic improvements in OpenWhisk's ability to handle high-concurrency workloads:
+
+| Configuration   | mobilenet-mongo Success | linear regression Success |
+|-----------------|-------------------------|---------------------------|
+| Default         | 3.68% (298/8100)        | 3.53% (286/8100)          |
+| First Optimized | 37.9% (3070/8100)       | 57.35% (4645/8100)        |
+| Advanced        | 79.19% (6414/8100)      | 99.3% (8043/8100)         |
+
+These results demonstrate that proper configuration is critical for OpenWhisk deployments running ML workloads at scale. The most significant improvements came from:
+
+1. Increasing concurrent invocation limits
+2. Adding more processing capacity (controllers and invokers)
+3. Allocating more memory for container pools
+4. Extending action timeouts for complex operations
+5. Optimizing the blackbox-fraction for Docker actions
 
