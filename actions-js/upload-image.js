@@ -73,6 +73,42 @@ async function main(params) {
     
     await client.close();
     
+    //Fire a trigger for image classification
+    try {
+      console.log('Attempting to fire image-uploaded trigger');
+      const openwhisk = require('openwhisk');
+      console.log('OpenWhisk module loaded');
+      
+      //Log environment variables for debugging
+      console.log('ENV variables:', {
+        apihost: process.env.__OW_API_HOST,
+        namespace: process.env.__OW_NAMESPACE,
+        auth: process.env.__OW_API_KEY ? 'Set' : 'Not Set'
+      });
+      
+      const ow = openwhisk();
+      console.log('OpenWhisk client initialized');
+      
+      //
+      //Use fully qualified trigger name
+      const triggerName = '/whisk.system/image-uploaded';
+      
+      console.log(`Invoking trigger: ${triggerName}`);
+      
+      const triggerResult = await ow.triggers.invoke({
+        name: triggerName,
+        params: {
+          imageId: result.insertedId.toString(),
+          imageName: imageName
+        }
+      });
+      
+      console.log('Successfully fired image-uploaded trigger:', JSON.stringify(triggerResult));
+    } catch (triggerError) {
+      console.error('Failed to fire trigger. Error:', triggerError.message);
+      console.error('Error details:', JSON.stringify(triggerError));
+    }
+    
     return {
       success: true,
       id: result.insertedId,

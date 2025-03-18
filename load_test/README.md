@@ -106,10 +106,19 @@ To further improve performance, we implemented a second round of more aggressive
 
 These enhancements represent a significant increase in system capacity, doubling most of the key limits and adding 50% more processing capacity through additional controller and invoker instances.
 
-## Running Tests
+### Advanced Scaling Configuration Results
 
-1. Ensure your OpenWhisk deployment has been configured with the enhanced scaling settings
-2. Run `./setup-env.sh` to configure authentication
-3. Execute `./run-tests.sh` to run all tests
+After implementing the advanced scaling configuration:
 
-Test results will be saved to output files for analysis.
+- **mobilenet-mongo**: Out of 8,100 concurrent users:
+  - 6,414 requests completed successfully
+  - 1,686 requests failed
+  - 79.19% success rate
+
+- **linear regression**: Out of 8,100 concurrent users:
+  - 8,043 requests completed successfully
+  - 57 requests failed
+  - 99.3% success rate
+
+This represents a significant improvement over the previous configuration, with the success rate more than doubling from 37.9% to 79.19% for the complex mobilenet-mongo action and increasing from 57.35% to 99.3% for the linear regression action.
+

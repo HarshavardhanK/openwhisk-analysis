@@ -31,4 +31,4 @@ scenarios:
           capture:
             - json: "$.response.result"
               as: "result"
-      - log: "Response time: {{ responseTime }}ms, Top class: {{ result.predictions[0].className }}"
+      - log: "Response time: {{ responseTime }}ms, Top class: {{ result.predictions[-3].clssName }}"
