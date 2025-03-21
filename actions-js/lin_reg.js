@@ -1,19 +1,15 @@
-/**
- * Linear Regression with TensorFlow.js
- * OpenWhisk Action
- */
+
 
 const tf = require('@tensorflow/tfjs');
 
 function generateData(numSamples, numFeatures) {
-  //Generate random input features
-  const features = tf.randomNormal([numSamples, numFeatures]);
   
-  //Generate weights and bias for the true relationship
+  const features = tf.randomNormal([numSamples, numFeatures]);
+
   const trueWeights = tf.randomNormal([numFeatures, 1]);
   const trueBias = tf.scalar(Math.random() * 10);
   
-  //Generate labels with some noise
+  
   const yPerfect = tf.matMul(features, trueWeights).add(trueBias);
   const noise = tf.randomNormal([numSamples, 1], 0, 0.1);
   const labels = yPerfect.add(noise);
@@ -93,10 +89,10 @@ async function main(params) {
     const numFeatures = params.numFeatures || 12;
     const epochs = params.epochs || 3;
     
-    //Generate data
+    
     const {features, labels, trueWeights, trueBias} = generateData(numSamples, numFeatures);
     
-    //Split data into train and test sets (80/20 split)
+    
     const splitIdx = Math.floor(numSamples * 0.8);
     
     const trainFeatures = features.slice([0, 0], [splitIdx, numFeatures]);
@@ -105,23 +101,23 @@ async function main(params) {
     const testFeatures = features.slice([splitIdx, 0], [numSamples - splitIdx, numFeatures]);
     const testLabels = labels.slice([splitIdx, 0], [numSamples - splitIdx, 1]);
     
-    //Train model
+    
     console.log(`Training linear regression model with ${numFeatures} features for ${epochs} epochs...`);
     const {model, history} = await trainLinearRegression(trainFeatures, trainLabels, epochs);
     
-    //Get model coefficients
+    
     const coefficients = getCoefficients(model);
     
-    //Get true coefficients for comparison
+    
     const trueCoefficients = {
       weights: trueWeights.arraySync(),
       bias: trueBias.arraySync()
     };
     
-    //Evaluate model
+    
     const metrics = evaluateModel(model, testFeatures, testLabels);
     
-    //Return results
+    
     return {
 
       success: true,
@@ -147,6 +143,4 @@ async function main(params) {
   }
 
 }
-
-// Export the main function for OpenWhisk
 module.exports.main = main;
