@@ -145,7 +145,7 @@ async function main(params) {
     };
 
   }
-  
+
 }
 
 // Export the main function for OpenWhisk

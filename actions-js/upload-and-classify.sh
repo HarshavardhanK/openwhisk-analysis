@@ -45,7 +45,6 @@ fi
 echo "Classification process started."
 echo "Waiting for classification results..."
 
-#Wait a moment for the classification to complete
 sleep 3
 
 echo "Recent mobilenet-mongo activations:"

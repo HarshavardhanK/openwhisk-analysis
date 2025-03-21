@@ -30,11 +30,12 @@ def preprocess_image(image, target_size=(224, 224)):
 
 def load_model():
     """Load and return the pre-trained model"""
-    # Load MobileNetV2 pre-trained model
+    # Load MobileNetV2 pre-trained model with reduced size
     model = tf.keras.applications.MobileNetV2(
         input_shape=(224, 224, 3),
         include_top=True,
-        weights='imagenet'
+        weights='imagenet',
+        alpha=0.35  # Use the smallest variant (35% of filters)
     )
     return model
 
@@ -77,8 +78,16 @@ def main(args):
         # Load the model (could be cached in a production environment)
         model = load_model()
         
+        # Reduce precision to save memory
+        try:
+            import tensorflow as tf
+            if hasattr(tf, 'keras'):
+                tf.keras.mixed_precision.set_global_policy('mixed_float16')
+        except:
+            pass
+            
         # Make prediction
-        predictions = model.predict(processed_image)
+        predictions = model.predict(processed_image, batch_size=1)
         
         # Decode predictions
         decoded_predictions = tf.keras.applications.mobilenet_v2.decode_predictions(

@@ -1,0 +1,98 @@
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: localhost
+    apiHostPort: 31001
+    useInternally: false
+  
+  limits:
+    concurrentInvocations: 200
+    throughput: 200
+    actionsInvokesPerminute: 1200
+    actionsInvokesConcurrent: 200
+    triggersFiresPerminute: 1200
+    actions:
+      memory:
+        min: "128m"
+        max: "4096m"  # 4GB for memory-intensive ML workloads
+        std: "1024m"  # Default memory allocation
+      time:
+        max: "10m"    # 10 minutes maximum timeout
+        min: "100ms"
+        std: "1m"     # Default timeout
+  
+  loadbalancer:
+    blackbox-fraction: 0.8
+    
+  containerPool:
+    userMemory: "32G"
+    
+  controller:
+    lean: false
+    replicaCount: 3
+    extraEnvVars:
+      - name: CONFIG_whisk_metrics_kamon
+        value: "true"
+      - name: CONFIG_whisk_metrics_kamon_tags_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_port
+        value: "9095"
+      - name: CONFIG_whisk_metrics_prometheus_enabled 
+        value: "true"
+      - name: CONFIG_whisk_controller_timeoutMax
+        value: "300s"  # 5 minutes for blocking invocations
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9095"
+    # Removed extraPorts to rely on the dedicated metrics configuration below
+  
+  invoker:
+    replicaCount: 3
+    jvmHeapMB: 4096
+    extraEnvVars:
+      - name: CONFIG_whisk_metrics_kamon
+        value: "true"
+      - name: CONFIG_whisk_metrics_kamon_tags_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_enabled
+        value: "true"
+      - name: CONFIG_kamon_prometheus_port
+        value: "9095"
+      - name: CONFIG_whisk_metrics_prometheus_enabled 
+        value: "true"
+      - name: CONFIG_whisk_containerProxy_timeouts_idleContainer
+        value: "15m"  # 15 minutes idle container timeout
+      - name: CONFIG_whisk_memory_min
+        value: "128m"
+      - name: CONFIG_whisk_memory_max
+        value: "4096m"  # 4GB for memory-intensive ML workloads
+      - name: CONFIG_whisk_memory_std
+        value: "1024m"
+      - name: CONFIG_whisk_timeLimit_min
+        value: "100ms"
+      - name: CONFIG_whisk_timeLimit_max
+        value: "600000"  # 10 minutes in milliseconds
+      - name: CONFIG_whisk_timeLimit_std
+        value: "60000"   # 1 minute default
+    options: "-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider -Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9095"
+    # Removed extraPorts here as well
+  
+nginx:
+  httpsNodePort: 31001
+
+# A single node cluster; so disable affinity
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+
+# Enable user metrics for action-specific metrics and system metrics
+metrics:
+  prometheusEnabled: true        
+  userMetricsEnabled: true
+

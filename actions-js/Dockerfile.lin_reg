@@ -1,0 +1,6 @@
+FROM openwhisk/action-nodejs-v10:latest
+
+
+RUN npm install @tensorflow/tfjs
+
+RUN node -e "require('@tensorflow/tfjs')"
